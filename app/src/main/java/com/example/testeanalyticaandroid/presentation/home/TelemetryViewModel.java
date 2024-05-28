@@ -68,13 +68,13 @@ public class TelemetryViewModel extends ViewModel {
 
                         @Override
                         public void onFailure(Call<TelemetryResponse> call, Throwable t) {
-                            _status.postValue("Error fetching telemetry");
+                            _status.postValue("Erro ao buscar telemetria");
                         }
                     }
             );
 
         } catch (Exception e) {
-            _status.postValue("Error fetching telemetry");
+            _status.postValue("Erro ao buscar telemetria");
         }
     }
 
@@ -85,11 +85,11 @@ public class TelemetryViewModel extends ViewModel {
         Boolean industryStatus = (Boolean) sensorData.getOrDefault("industry_status", false);
 
         if (speed > 0.0 && engineStatus && caneStatus && industryStatus) {
-            _status.postValue("In operation");
+            _status.postValue("Em operação");
             sendInOperation();
             return false;
         } else {
-            _status.postValue("Indeterminate event");
+            _status.postValue("Evento indeterminado");
             return true;
         }
     }
@@ -118,12 +118,12 @@ public class TelemetryViewModel extends ViewModel {
 
                         @Override
                         public void onFailure(Call<OperationResponse> call, Throwable t) {
-                            Log.e("Telemetry", "Error sending operation");
+                            Log.e("Telemetry", "Erro ao enviar operação");
                         }
                     }
             );
         } catch (Exception e) {
-            Log.e("Telemetry", "Error sending operation");
+            Log.e("Telemetry", "Erro ao enviar operação");
         }
     }
 }
