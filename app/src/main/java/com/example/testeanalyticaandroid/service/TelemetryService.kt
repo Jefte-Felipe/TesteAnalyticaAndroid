@@ -1,7 +1,7 @@
 package com.example.testeanalyticaandroid.service
 
-import com.example.testeanalyticaandroid.OperationResponse
-import com.example.testeanalyticaandroid.TelemetryResponse
+import com.example.testeanalyticaandroid.model.OperationResponse
+import com.example.testeanalyticaandroid.model.TelemetryResponse
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query

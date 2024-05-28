@@ -1,9 +1,10 @@
-package com.example.testeanalyticaandroid
+package com.example.testeanalyticaandroid.presentation.home
 
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import com.example.testeanalyticaandroid.R
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {

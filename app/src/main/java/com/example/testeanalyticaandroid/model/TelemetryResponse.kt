@@ -1,4 +1,4 @@
-package com.example.testeanalyticaandroid
+package com.example.testeanalyticaandroid.model
 
 data class TelemetryResponse(
     val sensor: String,

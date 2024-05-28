@@ -1,4 +1,4 @@
-package com.example.testeanalyticaandroid
+package com.example.testeanalyticaandroid.presentation.home
 
 import android.util.Log
 import androidx.lifecycle.LiveData

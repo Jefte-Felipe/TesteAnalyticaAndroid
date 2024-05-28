@@ -1,4 +1,4 @@
-package com.example.testeanalyticaandroid
+package com.example.testeanalyticaandroid.app
 
 import android.app.Application
 import com.example.testeanalyticaandroid.di.appModule
