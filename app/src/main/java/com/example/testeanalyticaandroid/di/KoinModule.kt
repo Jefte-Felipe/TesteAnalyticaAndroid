@@ -1,6 +1,5 @@
 package com.example.testeanalyticaandroid.di
 
-import com.example.testeanalyticaandroid.TelemetryService
 import com.example.testeanalyticaandroid.TelemetryViewModel
 import com.example.testeanalyticaandroid.service.TelemetryService
 import org.koin.androidx.viewmodel.dsl.viewModelOf
