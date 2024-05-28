@@ -1,7 +1,7 @@
 package com.example.testeanalyticaandroid.di
 
 import com.example.testeanalyticaandroid.presentation.home.TelemetryViewModel
-import com.example.testeanalyticaandroid.service.TelemetryService
+import com.example.testeanalyticaandroid.data.source.remote.TelemetryService
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module
 import retrofit2.Retrofit
