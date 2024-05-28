@@ -2,6 +2,6 @@ package com.example.testeanalyticaandroid
 
 data class TelemetryResponse(
     val sensor: String,
-    val currentValue: Int
+    val currentValue: Any
 )
 

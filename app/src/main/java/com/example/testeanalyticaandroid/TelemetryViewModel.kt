@@ -33,7 +33,11 @@ class TelemetryViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = service.getTelemetry(counter)
+
+                //Salva os dados recebidos até que a combinação dos seguintes sensores seja detectada
                 sensorData[response.sensor] = response.currentValue
+
+                //Começa em 0 e incrementa 1 a cada request de getTelemetry
                 counter++
                 checkOperationStatus()
                 fetchTelemetry()
