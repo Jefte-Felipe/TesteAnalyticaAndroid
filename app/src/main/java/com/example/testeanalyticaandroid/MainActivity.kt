@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: TelemetryViewModel
+    private val viewModel: TelemetryViewModel by viewModel()
     private lateinit var statusTextView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,7 +16,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         statusTextView = findViewById(R.id.statusTextView)
-        viewModel = ViewModelProvider(this).get(TelemetryViewModel::class.java)
 
         viewModel.status.observe(this, Observer { status ->
             statusTextView.text = status

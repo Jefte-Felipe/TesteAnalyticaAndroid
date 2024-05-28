@@ -5,23 +5,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.testeanalyticaandroid.service.TelemetryService
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
-class TelemetryViewModel : ViewModel() {
+class TelemetryViewModel(
+    private val service: TelemetryService,
+) : ViewModel() {
 
     private val _status = MutableLiveData<String>()
     val status: LiveData<String> get() = _status
 
     private var counter = 0
-
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://test.analitica.ag")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val service = retrofit.create(TelemetryService::class.java)
 
     private val sensorData = mutableMapOf<String, Any>()
 
@@ -39,25 +33,29 @@ class TelemetryViewModel : ViewModel() {
 
                 //Começa em 0 e incrementa 1 a cada request de getTelemetry
                 counter++
-                checkOperationStatus()
-                fetchTelemetry()
+                val shoulCallAgain = checkOperationStatus()
+                if (shoulCallAgain) {
+                    fetchTelemetry()
+                }
             } catch (e: Exception) {
                 _status.postValue("Erro ao buscar telemetria")
             }
         }
     }
 
-    private fun checkOperationStatus() {
-        val speed = sensorData["speed"] as? Int ?: 0
+    private fun checkOperationStatus(): Boolean {
+        val speed = sensorData["speed"] as? Double ?: 0.0
         val engineStatus = sensorData["engine_status"] as? Boolean ?: false
         val caneStatus = sensorData["sugar_cane_elevator_status"] as? Boolean ?: false
         val industryStatus = sensorData["industry_status"] as? Boolean ?: false
 
-        if (speed > 0 && engineStatus && caneStatus && industryStatus) {
+        return if (speed > 0.0 && engineStatus && caneStatus && industryStatus) {
             _status.postValue("Em operação")
             sendInOperation()
+            false
         } else {
             _status.postValue("Evento indeterminado")
+            true
         }
     }
 
