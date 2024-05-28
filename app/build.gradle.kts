@@ -57,8 +57,4 @@ dependencies {
 
     // ViewModel KTX para usar viewModelScope
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
-
-    // Dependências de Koin
-    implementation("io.insert-koin:koin-android:3.2.2")
-
 }

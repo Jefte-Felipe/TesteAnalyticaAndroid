@@ -1,22 +1,29 @@
 package com.example.testeanalyticaandroid.presentation.home;
 
-import static kotlinx.coroutines.CoroutineScopeKt.CoroutineScope;
-
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import com.example.testeanalyticaandroid.app.RetrofitClient;
 import com.example.testeanalyticaandroid.data.model.OperationResponse;
 import com.example.testeanalyticaandroid.data.model.TelemetryResponse;
 import com.example.testeanalyticaandroid.data.source.remote.TelemetryService;
+
 import java.util.HashMap;
 import java.util.Map;
-import androidx.lifecycle.ViewModelKt;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class TelemetryViewModel extends ViewModel {
-    private final TelemetryService service;
 
     private final MutableLiveData<String> _status = new MutableLiveData<>();
+
     public LiveData<String> getStatus() {
         return _status;
     }
@@ -25,29 +32,50 @@ public class TelemetryViewModel extends ViewModel {
 
     private final Map<String, Object> sensorData = new HashMap<>();
 
-    public TelemetryViewModel(TelemetryService service) {
-        this.service = service;
+    public TelemetryViewModel() {
         fetchTelemetry();
     }
-
     private void fetchTelemetry() {
-        ViewModelKt.getViewModelScope().launch(() -> {
-            try {
-                TelemetryResponse response = service.getTelemetry(counter,0);
+        try {
+            RetrofitClient.getClient().create(TelemetryService.class).getTelemetry(counter).enqueue(
+                    new Callback<TelemetryResponse>() {
+                        @Override
+                        public void onResponse(Call<TelemetryResponse> call, Response<TelemetryResponse> response) {
+                            if (!response.isSuccessful()) {
+                                onFailure(call, new RuntimeException());
+                                return;
+                            }
 
-                // Save the received data until the combination of the following sensors is detected
-                sensorData.put(response.getSensor(), response.getCurrentValue());
+                            TelemetryResponse body = response.body();
 
-                // Starts at 0 and increments 1 for each getTelemetry request
-                counter++;
-                boolean shouldCallAgain = checkOperationStatus();
-                if (shouldCallAgain) {
-                    fetchTelemetry();
-                }
-            } catch (Exception e) {
-                _status.postValue("Error fetching telemetry");
-            }
-        });
+                            Log.e(TelemetryViewModel.class.getSimpleName(), body.toString());
+                            // Save the received data until the combination of the following sensors is detected
+                            sensorData.put(body.getSensor(), body.getCurrentValue());
+
+                            // Starts at 0 and increments 1 for each getTelemetry request
+                            counter++;
+
+                            boolean shouldCallAgain = checkOperationStatus();
+                            if (shouldCallAgain) {
+                                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        fetchTelemetry();
+                                    }
+                                }, 1000);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<TelemetryResponse> call, Throwable t) {
+                            _status.postValue("Error fetching telemetry");
+                        }
+                    }
+            );
+
+        } catch (Exception e) {
+            _status.postValue("Error fetching telemetry");
+        }
     }
 
     private boolean checkOperationStatus() {
@@ -67,13 +95,35 @@ public class TelemetryViewModel extends ViewModel {
     }
 
     private void sendInOperation() {
-        ViewModelKt.getViewModelScope().launch(() -> {
-            try {
-             OperationResponse response = service.sendInOperation(counter,0);
-                Log.d("Telemetry", response.getMessage());
-            } catch (Exception e) {
-                Log.e("Telemetry", "Error sending operation");
-            }
-        });
+        try {
+            Log.e(TelemetryViewModel.class.getSimpleName(), String.valueOf(counter));
+            RetrofitClient.getClient().create(TelemetryService.class).sendInOperation(counter).enqueue(
+                    new Callback<OperationResponse>() {
+                        @Override
+                        public void onResponse(Call<OperationResponse> call, Response<OperationResponse> response) {
+                            if (!response.isSuccessful()) {
+                                onFailure(call, new RuntimeException());
+                                return;
+                            }
+
+                            Log.e(TelemetryViewModel.class.getSimpleName(), response.message());
+
+                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    fetchTelemetry();
+                                }
+                            }, 1000);
+                        }
+
+                        @Override
+                        public void onFailure(Call<OperationResponse> call, Throwable t) {
+                            Log.e("Telemetry", "Error sending operation");
+                        }
+                    }
+            );
+        } catch (Exception e) {
+            Log.e("Telemetry", "Error sending operation");
+        }
     }
 }
